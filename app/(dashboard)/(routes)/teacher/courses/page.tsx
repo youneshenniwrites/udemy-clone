@@ -1,3 +1,5 @@
+import CreatePage from "../create/page";
+
 export default function CoursesPage() {
-  return <div>CoursesPage</div>;
+  return <CreatePage />;
 }
