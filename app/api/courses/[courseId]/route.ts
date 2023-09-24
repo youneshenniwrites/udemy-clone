@@ -3,10 +3,12 @@ import { auth } from "@clerk/nextjs";
 import { HttpStatusCode } from "axios";
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+export async function PATCH(
+  req: Request,
+  { params }: { params: { courseId: string } }
+) {
   try {
     const { userId } = auth();
-    const { title } = await req.json();
 
     if (!userId) {
       return new NextResponse("Unauthorized", {
@@ -14,17 +16,22 @@ export async function POST(req: Request) {
       });
     }
 
-    const course = await db.course.create({
-      data: {
+    const values = await req.json();
+
+    const course = await db.course.update({
+      where: {
+        id: params.courseId,
         userId,
-        title,
+      },
+      data: {
+        ...values,
       },
     });
 
     return NextResponse.json(course);
   } catch (error) {
-    console.log("[COURSES]", error);
-    return new NextResponse("Internal Server Error", {
+    console.log("[COURSE_ID]", error);
+    return new NextResponse("Internal Error", {
       status: HttpStatusCode.InternalServerError,
     });
   }
